@@ -12,6 +12,8 @@ StudentsPerformance <- read.csv("C:/Users/ASUS/Downloads/New_data.csv")
 library(ggplot2)
 library(plotly)
 library(shiny)
+library(tidyverse)
+library(RColorBrewer)
 ```
 Trong phần này, dữ liệu được trực quan hóa thông qua các biểu đồ Histogram và Boxplot nhằm mô tả đặc điểm phân bố điểm số của học sinh, cũng như đánh giá sự khác biệt giữa các nhóm nhân khẩu học và điều kiện học tập. Việc trình bày dữ liệu bằng đồ thị giúp quan sát xu hướng tổng quát, phát hiện các giá trị ngoại lai và hiểu rõ mức độ biến thiên của từng biến trong bộ dữ liệu.\
 **1. Trực quan hóa bằng đồ thị Histogram.**\
@@ -32,7 +34,98 @@ ggplot(StudentsPerformance, aes(x = total.score)) +
 - Một số học sinh đạt tổng điểm rất cao (trên 280 điểm), nhưng số lượng không nhiều.
 - Tổng điểm trải dài từ khoảng 20 đến 300, cho thấy sự khác biệt đáng kể về năng lực học sinh.\
 
-**2.Trực quan hóa bằng đồ thị Boxplot.**\
+**2.Trực quan hóa bằng Bar chart.**
+```{r echo=FALSE, fig.width=7, fig.height=4}
+graph6 <- ggplot(StudentsPerformance, aes(x = gender, fill = gender)) +
+  geom_bar(width = 0.6,color = "black") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "Phân bố theo gender ",
+       x = "gender", y = "Số lượng") +
+  theme_minimal() +
+  theme(legend.position = "none",plot.title = element_text(hjust = 0.5, size = 13))
+div(
+  style = "display:flex; justify-content:center;",
+ div(style = "width:48%;", ggplotly(graph6))
+)
+graph7<- ggplot(StudentsPerformance, aes(x = race.ethnicity, fill = race.ethnicity)) +
+geom_bar(width = 0.6,color = "black") +
+scale_fill_brewer(palette = "Pastel1") +
+labs(title = "Phân bố theo race.ethnicity",
+x = "race.ethnicity", y = "Số lượng") +
+theme_minimal() +
+theme(legend.position = "none",plot.title = element_text(hjust = 0.5, size = 13))
+div(ggplotly(graph7))
+graph8<- ggplot(StudentsPerformance, aes(x = parental.level.of.education,
+fill = parental.level.of.education)) +
+geom_bar(width = 0.6,color = "black") +
+scale_fill_brewer(palette = "PiYG") +
+labs(title = "Phân bố theo parental.level.of.education",
+x = "parental.level.of.education", y = "Số lượng") +
+theme_minimal() +
+theme(legend.position = "none",plot.title = element_text(hjust = 0.5, size = 13))
+div(ggplotly(graph8))
+graph9<-ggplot(StudentsPerformance, aes(x = lunch, fill = lunch)) +
+geom_bar(width = 0.6,color = "black") +
+scale_fill_brewer(palette = "Paired") +
+labs(title = "Phân bố theo lunch",
+x = "lunch", y = "Số lượng") +
+theme_minimal() +
+theme(legend.position = "none",plot.title = element_text(hjust = 0.5, size = 13))
+
+div(
+  style = "display:flex; justify-content:center;",
+ div(style = "width:48%;", ggplotly(graph9))
+)
+graph10<-ggplot(StudentsPerformance, aes(x = test.preparation.course,
+fill = test.preparation.course)) +
+geom_bar(width = 0.6,color = "black") +
+scale_fill_brewer(palette = "Set3") +
+labs(title = "Phân bố theo test.preparation.course",
+x = "test.preparation.course", y = "Số lượng") +
+theme_minimal() +
+theme(legend.position = "none",plot.title = element_text(hjust = 0.5, size = 13))
+div(
+  style = "display:flex; justify-content:center;",
+ div(style = "width:48%;", ggplotly(graph10))
+)
+```
+**Nhận xét:** \
+Đồ thị phân bố theo gender:
+
+- Tỷ lệ học sinh nữ (518) cao hơn học sinh nam (482), nhưng chênh lệch không đáng kể.
+- Điều này cho thấy dataset khá cân bằng về giới tính, không bị lệch mạnh sang một phía.
+- Vì hai nhóm gần tương đương, việc so sánh điểm số theo giới sau này sẽ khách quan và không bị sai lệch do khác biệt lớn về kích thước mẫu.
+
+Đồ thị phân bố theo race.ethnicity:
+
+- Nhóm group C có số lượng học sinh nhiều nhất (319).
+- Nhóm group D và group B ở mức trung bình.
+- Nhóm group A và group E ít hơn đáng kể, đặc biệt group A (89).
+- Dataset hơi lệch về một số nhóm chủng tộc, do đó khi so sánh điểm theo race.ethnicity, cần xem xét khả năng mất cân bằng mẫu giữa các nhóm.
+
+Đồ thị phân bố theo parental.level.of.education: 
+
+- Trình độ học vấn của cha mẹ phân bố không đều.
+- Các nhóm some college, associate’s degree, và high school chiếm tỷ lệ lớn nhất.
+- Nhóm master’s degree có số lượng ít nhất (59).
+- Điều này phản ánh sự đa dạng trong nền tảng học vấn gia đình, nhưng cũng cho thấy các nhóm trình độ cao có cỡ mẫu nhỏ, cần thận trọng khi diễn giải.
+
+Đồ thị phân bố theo lunch:
+
+- Học sinh dùng standard lunch chiếm đa số (645).
+- Nhóm free/reduced lunch ít hơn khá rõ (355).
+- Điều này phản ánh: dataset có tỷ lệ học sinh kinh tế khó khăn thấp hơn.
+- Khi phân tích điểm total.score theo lunch, cần lưu ý sự không cân bằng mẫu này.
+
+Đồ thị phân bố theo test.preparation.course: 
+
+- Phần lớn học sinh không tham gia khóa chuẩn bị thi (642).
+- Chỉ có 358 học sinh đã completed khóa học.
+- Điều này cho thấy đa số học sinh không nhận hỗ trợ/hướng dẫn trước kỳ thi,việc so sánh điểm của nhóm completed với none có thể cho thấy ảnh hưởng thực tế của việc luyện thi.
+
+Tổng thể, các biểu đồ cho thấy dữ liệu cân đối ở biến gender nhưng có sự chênh lệch ở các biến race.ethnicity, parental.level.of.education, lunch và test.preparation.course; vì vậy khi phân tích total.score theo các biến này, cần lưu ý đến sự không đồng đều về kích thước mẫu giữa các nhóm để đảm bảo nhận định được khách quan và chính xác.
+
+**3.Trực quan hóa bằng đồ thị Boxplot.**\
 *Khởi tạo lần lượt 5 đồ thị Boxplot sử dụng thư viện ggplot2*
 ```{r graph}
 graph1 <- ggplot(
@@ -127,4 +220,10 @@ div(
 - Điểm thấp nhất của nhóm *completed* khoảng 103, trong khi nhóm *none* có nhiều học sinh điểm rất thấp (min chỉ khoảng 27).
 
 
-Tóm lại, các biến *gender*, *race.ethnicity*, *parental.level.of.education*, *lunch* và *test.preparation.course* đều có ảnh hưởng đáng kể đến *total.score*, và cần được xem xét kỹ khi phân tích và xây dựng mô hình dự đoán kết quả học tập.
+Tóm lại, các biến *gender*, *race.ethnicity*, *parental.level.of.education*, *lunch* và *test.preparation.course* đều có ảnh hưởng đáng kể đến *total.score*, và cần được xem xét kỹ khi phân tích và xây dựng mô hình dự đoán kết quả học tập. 
+
+
+
+
+
+
